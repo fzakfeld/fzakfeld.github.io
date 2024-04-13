@@ -1,29 +1,21 @@
-name: Build and Deploy
+name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: ['main']
-  workflow_dispatch:
+    branches: ["main"]
 
-permissions:
-  contents: read
-  pages: write
-  id-token: write
+  workflow_dispatch:
 
 concurrency:
   group: "pages"
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: ['20.12.0']
-
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
@@ -37,18 +29,9 @@ jobs:
       - name: Run npm build
         run: npm run build
 
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v1
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
         with:
-          path: ./dist/
-
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+          publish_dir: dist
+          publish_branch: gh-pages
+          github_token: ${{ secrets.GITHUB_TOKEN }}    
