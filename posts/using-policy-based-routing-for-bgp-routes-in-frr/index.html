@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Freerk Zakfeld</title>
+  <link rel="stylesheet" href="/css/index.css" />
+</head>
+<body class="bg-neutral-900 text-white">
+  <div class="mx-auto px-4 max-w-screen-sm">
+    <div class="py-8 font-extrabold text-xl"><a href="/">Freerk Zakfeld</a></div>
+    <div class="prose prose-invert">
+  <h2>Using Policy-Based Routing for BGP routes in FRR.</h2>
+  <p>Policy-Based Routing is commonly used on Linux hosts to make individual routing decisions based on certain factors like the outgoing interface. For example, your web server may have an interface for actual incoming web traffic and another one for management. Both will probably have their own default route, and PBR is used by the Linux kernel to decide which one it should use.</p>
+<p>Usually you would do something like that:</p>
+<pre><code>ip -6 rule add oif eth3 lookup 200
+ip -6 route add ::/0 via 2001:db8::1337 dev eth0 table 200
+</code></pre>
+<p>This will make sure that all traffic sent from eth3 (where our web server's main IP address is on) is routed to <code>2001:db8::1337</code>, while everything else will use the routes installed in the default table.</p>
+<p>However, if you are using BGP for your uplink, the default routes are not installed statically but rather dynamically. Luckily, in a recent commit FRR added the option to specify the routing table in which incoming routes are installed. This is controlled via route-maps.</p>
+<pre><code>router bgp 65001
+neighbor interface eth3 remote-as external
+!
+address family ipv6 unicast
+  neighbor interface eth3 activate
+  neighbor interface eth3 route-map bgp_in_external in
+!
+route-map bgp_in_external permit 10
+  set table 200
+!
+</code></pre>
+<p>The <code>set table 200</code> keyword will tell FRR to install the routes in to table 200. You then just need to specify the policies with the <code>ip rule</code> command (shown above).</p>
+<h3>References</h3>
+<p><a href="https://docs.frrouting.org/en/stable-8.2/routemap.html#clicmd-set-table-1-4294967295">https://docs.frrouting.org/en/stable-8.2/routemap.html#clicmd-set-table-1-4294967295</a></p>
+
+</div>
+    <div class="py-8 prose prose-invert">
+      <small>2024 Freerk-Ole Zakfeld. <a href="/legal-notice">Legal</a> / <a href="/privacy-policy">Privacy</a></small>
+    </div>
+  </div>
+</body>
+</html>
