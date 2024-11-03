@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Freerk Zakfeld</title>
+  <link rel="stylesheet" href="/css/index.css" />
+</head>
+<body class="bg-neutral-900 text-white">
+  <div class="mx-auto px-4 max-w-screen-sm">
+    <div class="py-8 font-extrabold text-xl"><a href="/">Freerk Zakfeld</a></div>
+    <div class="prose prose-invert">
+  <h2>Using Checkmk with Prometheus Alertmanager</h2>
+  <p>If you are like me you probably love Prometheus and want to use it for monitoring purposes. You can do this very easily with Alertmanager. But the alerting options are somewhat limited there and you might have another monitoring system in place, like Checkmk.</p>
+<p>Luckily, Checkmk can easily work together with the Prometheus Alertmanager.</p>
+<h2>Steps</h2>
+<p>Unlike Prometheus Checkmk works on a host basis. You need to create a single &quot;dummy&quot; host, for example, called &quot;my-alertmanager&quot;. Set it as folows:</p>
+<ul>
+<li>IP address family: No IP</li>
+<li>Checkmk agent / API integrations: Configured API integrations, no Checkmk agent</li>
+<li>SNMP: No SNMP</li>
+</ul>
+<p>This host won't actually be monitored, but it will be the host where the alerts are shown.</p>
+<p>Now go to &quot;Setup&quot; -&gt; &quot;Agents&quot; -&gt; &quot;VM, cloud, container&quot; -&gt; &quot;Alertmanager&quot;. Create a Rule and configure it as follows:</p>
+<ul>
+<li>Description: my-alertmanager (or anything you'd like)</li>
+<li>URL server address: your prometheus host with port (e.g. prometheus.example.com:443)</li>
+<li>Authentication: set this according to your prometheus authentication, e.g. basic</li>
+<li>Protocol: HTTP or HTTPS</li>
+</ul>
+<p>Under &quot;Conditions&quot;, add your dummy host as an explicit host.</p>
+<p>Now save and run a service discovery on your dummy host. The alert groups should pop up as services.</p>
+
+</div>
+    <div class="py-8 prose prose-invert">
+      <small>2024 Freerk-Ole Zakfeld. <a href="/legal-notice">Legal</a> / <a href="/privacy-policy">Privacy</a></small>
+    </div>
+  </div>
+</body>
+</html>
