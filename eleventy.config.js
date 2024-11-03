@@ -14,6 +14,7 @@ const postcssFilter = (css, done) => {
 
 module.exports = function (config) {
   config.addNunjucksAsyncFilter("postcss", postcssFilter);
+  config.addPassthroughCopy("CNAME");
 
   return {
     dir: {
