@@ -1,4 +1,4 @@
-name: Deploy to GitHub Pages
+name: Build website
 
 on:
   push:
@@ -26,7 +26,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'npm'
+          cache: "npm"
 
       - name: Install packages
         run: npm ci
@@ -34,9 +34,15 @@ jobs:
       - name: Run npm build
         run: npm run build
 
-      - name: Deploy
-        uses: peaceiris/actions-gh-pages@v3
+      - name: Archive production build
+        run: |
+          tar -czf website.tar.gz ./dist
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
         with:
-          publish_dir: dist
-          publish_branch: gh-pages
-          github_token: ${{ secrets.GITHUB_TOKEN }}    
+          name: Website Release ${{ github.run_number }}
+          tag_name: v${{ github.run_number }}
+          files: website.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
