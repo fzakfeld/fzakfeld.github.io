@@ -36,7 +36,7 @@ jobs:
 
       - name: Archive production build
         run: |
-          tar -czf website.tar.gz ./dist/
+          tar -czf website.tar.gz -C dist .
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
